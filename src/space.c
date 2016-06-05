@@ -67,7 +67,7 @@ void p1Shoot(struct SpaceGlobals * mySpaceGlobals)
 //		activateBullet(mySpaceGlobals, mySpaceGlobals->angle - 3.14159265, mySpaceGlobals->p1X, mySpaceGlobals->p1Y);
 		// shoot a bullet
 		// find an inactive bullet
-		float theta = mySpaceGlobals->angle - 3.14159265;
+		float theta = mySpaceGlobals->angle - 3.14159265f;
 		int xx;
 		for (xx=0; xx<20; xx++)
 		{
@@ -110,7 +110,7 @@ void p1Move(struct SpaceGlobals *mySpaceGlobals) {
 	
 	// don't update angle if both are within -.1 < x < .1
 	// (this is an expenesive check... 128 bytes compared to just ==0)
-	if (xdif < 0.1 && xdif > -0.1 && ydif < 0.1 && ydif > -0.1) return;
+	if (xdif < 0.1f && xdif > -0.1f && ydif < 0.1f && ydif > -0.1f) return;
 	
 	// invalid view
 	mySpaceGlobals->invalid = 1;
@@ -120,7 +120,7 @@ void p1Move(struct SpaceGlobals *mySpaceGlobals) {
 	mySpaceGlobals->p1Y -= ydif*5;
 		
 	// calculate angle to face
-	mySpaceGlobals->angle = my_atan2(ydif, xdif) - 3.14159265/2;
+	mySpaceGlobals->angle = my_atan2(ydif, xdif) - 3.14159265f/2;
 	
 	// update score if on a frame divisible by 60 (gain 10 points every second)
 	if (mySpaceGlobals->frame % 60 == 0)
@@ -289,12 +289,12 @@ void makeRotationMatrix(float angle, int width, void *orig, void *targ, int tran
 		int y;
 		for (y=0; y<width; y++)
 		{
-//			target[x][y] = transIndex;
-            target[x][y] = original[x][y]; // TODO: temporary, prevents rotation
+			target[x][y] = transIndex;
+//            target[x][y] = original[x][y]; // TODO: temporary, prevents rotation
 		}
 	}
 	
-	float woffset = width/2.0;
+	float woffset = width/2.0f;
 	
 	// go though every pixel in the target bitmap
 	for (x=0; x<width; x++)
@@ -315,7 +315,7 @@ void makeRotationMatrix(float angle, int width, void *orig, void *targ, int tran
 			if (oldy < 0 || oldy >= width) continue;
 			
             // TODO: crashes with this below line! When trying to assign to target, but only after doing the above math
-//			target[x][y] = original[oldx][oldy];
+			target[x][y] = original[oldx][oldy];
 		}
 	}
 }
@@ -457,9 +457,9 @@ void moveBullets(struct SpaceGlobals *mySpaceGlobals)
 				mySpaceGlobals->enemies[x].position.active = 0;
 			
 			// rotate the enemy slowly
-			mySpaceGlobals->enemies[x].angle += 0.02;
-			if (mySpaceGlobals->enemies[x].angle > 6.28318530)
-				mySpaceGlobals->enemies[x].angle = 0;
+			mySpaceGlobals->enemies[x].angle += 0.02f;
+			if (mySpaceGlobals->enemies[x].angle > 6.28318530f)
+				mySpaceGlobals->enemies[x].angle = 0.0f;
 			
 			makeRotationMatrix(mySpaceGlobals->enemies[x].angle, 23, mySpaceGlobals->enemy, mySpaceGlobals->enemies[x].rotated_sprite, 9);
 			
@@ -691,13 +691,13 @@ void doMenuAction(struct SpaceGlobals *mySpaceGlobals)
 	
 	float stickY = mySpaceGlobals->lstick.y + mySpaceGlobals->rstick.y;
 	
-	if (mySpaceGlobals->button & VPAD_BUTTON_DOWN || stickY < -0.3)
+	if (mySpaceGlobals->button & VPAD_BUTTON_DOWN || stickY < -0.3f)
 	{
 		mySpaceGlobals->menuChoice = 1;
 		mySpaceGlobals->invalid = 1;
 	}
 	
-	if (mySpaceGlobals->button & VPAD_BUTTON_UP || stickY > 0.3)
+	if (mySpaceGlobals->button & VPAD_BUTTON_UP || stickY > 0.3f)
 	{
 		mySpaceGlobals->menuChoice = 0;
 		mySpaceGlobals->invalid = 1;
@@ -771,10 +771,10 @@ void doPasswordMenuAction(struct SpaceGlobals * mySpaceGlobals)
 		
 		float stickY = mySpaceGlobals->lstick.y + mySpaceGlobals->rstick.y;
 		float stickX = mySpaceGlobals->lstick.x + mySpaceGlobals->rstick.x;
-		int down  = (mySpaceGlobals->button & VPAD_BUTTON_DOWN  || stickY < -0.3);
-		int up    = (mySpaceGlobals->button & VPAD_BUTTON_UP    || stickY >  0.3);
-		int left  = (mySpaceGlobals->button & VPAD_BUTTON_LEFT  || stickX < -0.3);
-		int right = (mySpaceGlobals->button & VPAD_BUTTON_RIGHT || stickX >  0.3);
+		int down  = (mySpaceGlobals->button & VPAD_BUTTON_DOWN  || stickY < -0.3f);
+		int up    = (mySpaceGlobals->button & VPAD_BUTTON_UP    || stickY >  0.3f);
+		int left  = (mySpaceGlobals->button & VPAD_BUTTON_LEFT  || stickX < -0.3f);
+		int right = (mySpaceGlobals->button & VPAD_BUTTON_RIGHT || stickX >  0.3f);
 		
 		if (up || down)
 		{
@@ -857,7 +857,7 @@ void addNewEnemies(struct SpaceGlobals *mySpaceGlobals)
 //	// randomly decide to set starting angle right for the player
 //	float seekPlayer = prand(&mySpaceGlobals->seed)*2;
 	
-	float difficulty = mySpaceGlobals->level/100.0;
+	float difficulty = mySpaceGlobals->level/100.0f;
 	
 	float randVal = prand(&mySpaceGlobals->seed);
 	
@@ -871,7 +871,7 @@ void addNewEnemies(struct SpaceGlobals *mySpaceGlobals)
 	
 	int startx, starty;
 	
-	float theta = prand(&mySpaceGlobals->seed)*3.14159265;
+	float theta = prand(&mySpaceGlobals->seed)*3.14159265f;
 	randVal = prand(&mySpaceGlobals->seed);
 	
 	// horiz size
@@ -881,7 +881,7 @@ void addNewEnemies(struct SpaceGlobals *mySpaceGlobals)
 		starty = randVal*yMaxBoundry;
 		
 		if (startx != 0)
-			theta -= 3.14159265;
+			theta -= 3.14159265f;
 	}
 	else
 	{
@@ -889,9 +889,9 @@ void addNewEnemies(struct SpaceGlobals *mySpaceGlobals)
 		startx = randVal*xMaxBoundry;
 		
 		if (starty == 20)
-			theta -= 3.14159265/2;
+			theta -= 3.14159265f/2;
 		else
-			theta += 3.14159265/2;
+			theta += 3.14159265f/2;
 	}
 	
 	// seek directly to the player
@@ -900,7 +900,7 @@ void addNewEnemies(struct SpaceGlobals *mySpaceGlobals)
 		float xdif = startx + 11 - (mySpaceGlobals->p1X + 18);
 		float ydif = starty + 11 - (mySpaceGlobals->p1Y + 18);
 		
-		theta = my_atan2(xdif, ydif) - 3.14159265;
+		theta = my_atan2(xdif, ydif) - 3.14159265f;
 	}
 		
 	int xx;
